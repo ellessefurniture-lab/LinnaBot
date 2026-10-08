@@ -1,0 +1,12 @@
+{
+  "name": "telegram-bot-management-system",
+  "version": "1.0.0",
+  "description": "Production-ready Telegram Bot Management System",
+  "private": true,
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "test": "npm --prefix backend test"
+  }
+}
