@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { SupportStatus } from '@prisma/client';
+import { SupportStatus } from '../types/enums';
 import { SupportService } from '../services/supportService';
 import { sendError, sendPaginated, sendSuccess } from '../utils/apiResponse';
 import { logAdminAction } from '../middleware/auditLogger';

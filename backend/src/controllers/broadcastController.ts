@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { BroadcastStatus, MediaType, ParseMode, TargetAudience } from '@prisma/client';
+import { BroadcastStatus, MediaType, ParseMode, TargetAudience } from '../types/enums';
 import { BroadcastService } from '../services/broadcastService';
 import { sendError, sendPaginated, sendSuccess } from '../utils/apiResponse';
 import { logAdminAction } from '../middleware/auditLogger';

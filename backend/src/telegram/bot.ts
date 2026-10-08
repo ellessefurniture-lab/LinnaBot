@@ -1,5 +1,5 @@
 import { Telegraf, Markup } from 'telegraf';
-import { MessageType, UserStatus } from '@prisma/client';
+import { MessageDirection, MessageType, UserStatus } from '../types/enums';
 import { config } from '../config';
 import { logger } from '../utils/logger';
 import { UserService } from '../services/userService';
@@ -104,7 +104,7 @@ export function initTelegramBot(): Telegraf | null {
         await MessageService.logMessage({
           telegramMessageId: String(ctx.message?.message_id),
           userId: user.id,
-          direction: 'INCOMING',
+          direction: MessageDirection.INCOMING,
           messageType: MessageType.TEXT,
           content: '/start',
         });
@@ -119,7 +119,7 @@ export function initTelegramBot(): Telegraf | null {
       if (user) {
         await MessageService.logMessage({
           userId: user.id,
-          direction: 'OUTGOING',
+          direction: MessageDirection.OUTGOING,
           messageType: MessageType.TEXT,
           content: welcomeMsg,
         });
@@ -146,7 +146,7 @@ export function initTelegramBot(): Telegraf | null {
       if (user) {
         await MessageService.logMessage({
           userId: user.id,
-          direction: 'INCOMING',
+          direction: MessageDirection.INCOMING,
           messageType: MessageType.CALLBACK_QUERY,
           content: 'action_menu',
         });
@@ -177,7 +177,7 @@ export function initTelegramBot(): Telegraf | null {
 
       await MessageService.logMessage({
         userId: user.id,
-        direction: 'INCOMING',
+        direction: MessageDirection.INCOMING,
         messageType: MessageType.CALLBACK_QUERY,
         content: 'action_account',
       });
@@ -207,7 +207,7 @@ export function initTelegramBot(): Telegraf | null {
       if (user) {
         await MessageService.logMessage({
           userId: user.id,
-          direction: 'INCOMING',
+          direction: MessageDirection.INCOMING,
           messageType: MessageType.CALLBACK_QUERY,
           content: 'action_help',
         });
@@ -245,7 +245,7 @@ export function initTelegramBot(): Telegraf | null {
       if (user) {
         await MessageService.logMessage({
           userId: user.id,
-          direction: 'INCOMING',
+          direction: MessageDirection.INCOMING,
           messageType: MessageType.CALLBACK_QUERY,
           content: 'action_announcements',
         });
@@ -287,7 +287,7 @@ export function initTelegramBot(): Telegraf | null {
         await MessageService.logMessage({
           telegramMessageId: String(ctx.message.message_id),
           userId: user.id,
-          direction: 'INCOMING',
+          direction: MessageDirection.INCOMING,
           messageType: MessageType.TEXT,
           content: text,
           metadata: { isSupport: true },
@@ -309,7 +309,7 @@ export function initTelegramBot(): Telegraf | null {
       await MessageService.logMessage({
         telegramMessageId: String(ctx.message.message_id),
         userId: user.id,
-        direction: 'INCOMING',
+        direction: MessageDirection.INCOMING,
         messageType: MessageType.TEXT,
         content: text,
       });
@@ -333,7 +333,7 @@ export function initTelegramBot(): Telegraf | null {
       await MessageService.logMessage({
         telegramMessageId: String(ctx.message.message_id),
         userId: user.id,
-        direction: 'INCOMING',
+        direction: MessageDirection.INCOMING,
         messageType: MessageType.PHOTO,
         fileId: largest.file_id,
         content: caption,
@@ -350,7 +350,7 @@ export function initTelegramBot(): Telegraf | null {
       await MessageService.logMessage({
         telegramMessageId: String(ctx.message.message_id),
         userId: user.id,
-        direction: 'INCOMING',
+        direction: MessageDirection.INCOMING,
         messageType: MessageType.VIDEO,
         fileId: ctx.message.video.file_id,
         content: ctx.message.caption || '',
@@ -367,7 +367,7 @@ export function initTelegramBot(): Telegraf | null {
       await MessageService.logMessage({
         telegramMessageId: String(ctx.message.message_id),
         userId: user.id,
-        direction: 'INCOMING',
+        direction: MessageDirection.INCOMING,
         messageType: MessageType.DOCUMENT,
         fileId: ctx.message.document.file_id,
         content: ctx.message.caption || ctx.message.document.file_name,
@@ -384,7 +384,7 @@ export function initTelegramBot(): Telegraf | null {
       await MessageService.logMessage({
         telegramMessageId: String(ctx.message.message_id),
         userId: user.id,
-        direction: 'INCOMING',
+        direction: MessageDirection.INCOMING,
         messageType: MessageType.VOICE,
         fileId: ctx.message.voice.file_id,
       });
@@ -400,7 +400,7 @@ export function initTelegramBot(): Telegraf | null {
       await MessageService.logMessage({
         telegramMessageId: String(ctx.message.message_id),
         userId: user.id,
-        direction: 'INCOMING',
+        direction: MessageDirection.INCOMING,
         messageType: MessageType.STICKER,
         fileId: ctx.message.sticker.file_id,
         content: ctx.message.sticker.emoji || null,

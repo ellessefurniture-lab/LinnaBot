@@ -1,4 +1,5 @@
-import { Prisma, SenderType, SupportStatus } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { MessageDirection, SenderType, SupportStatus } from '../types/enums';
 import { prisma } from '../utils/prisma';
 import { botInstance } from '../telegram/bot';
 import { MessageService } from './messageService';
@@ -27,8 +28,8 @@ export class SupportService {
       const term = search.trim();
       where.user = {
         OR: [
-          { username: { contains: term, mode: 'insensitive' } },
-          { firstName: { contains: term, mode: 'insensitive' } },
+          { username: { contains: term } },
+          { firstName: { contains: term } },
           { telegramId: { contains: term } },
         ],
       };
@@ -152,7 +153,7 @@ export class SupportService {
         await MessageService.logMessage({
           telegramMessageId,
           userId: conversation.userId,
-          direction: 'OUTGOING',
+          direction: MessageDirection.OUTGOING,
           content,
           metadata: { supportConversationId: conversationId },
         });

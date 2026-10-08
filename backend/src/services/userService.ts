@@ -1,4 +1,5 @@
-import { Prisma, UserStatus } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { UserStatus } from '../types/enums';
 import { prisma } from '../utils/prisma';
 
 export interface GetUsersQuery {
@@ -20,9 +21,9 @@ export class UserService {
     if (search && search.trim()) {
       const term = search.trim();
       where.OR = [
-        { username: { contains: term, mode: 'insensitive' } },
-        { firstName: { contains: term, mode: 'insensitive' } },
-        { lastName: { contains: term, mode: 'insensitive' } },
+        { username: { contains: term } },
+        { firstName: { contains: term } },
+        { lastName: { contains: term } },
         { telegramId: { contains: term } },
       ];
     }

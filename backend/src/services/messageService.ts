@@ -1,4 +1,5 @@
-import { MessageDirection, MessageStatus, MessageType, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { MessageDirection, MessageStatus, MessageType } from '../types/enums';
 import { prisma } from '../utils/prisma';
 
 export interface LogMessageInput {
@@ -61,7 +62,7 @@ export class MessageService {
     }
 
     if (search && search.trim()) {
-      where.content = { contains: search.trim(), mode: 'insensitive' };
+      where.content = { contains: search.trim() };
     }
 
     const [messages, total] = await Promise.all([

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { MessageDirection, MessageType } from '@prisma/client';
+import { MessageDirection, MessageType } from '../types/enums';
 import { MessageService } from '../services/messageService';
 import { sendPaginated, sendSuccess } from '../utils/apiResponse';
 

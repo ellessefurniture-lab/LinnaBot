@@ -1,12 +1,12 @@
+import { Prisma } from '@prisma/client';
 import {
   BroadcastStatus,
   MediaType,
   ParseMode,
-  Prisma,
   RecipientStatus,
   TargetAudience,
   UserStatus,
-} from '@prisma/client';
+} from '../types/enums';
 import { prisma } from '../utils/prisma';
 import { broadcastQueue } from '../workers/broadcastWorker';
 import { logger } from '../utils/logger';

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { UserStatus } from '@prisma/client';
+import { UserStatus } from '../types/enums';
 import { UserService } from '../services/userService';
 import { sendError, sendPaginated, sendSuccess } from '../utils/apiResponse';
 import { logAdminAction } from '../middleware/auditLogger';

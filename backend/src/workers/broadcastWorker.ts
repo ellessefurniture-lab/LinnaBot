@@ -1,6 +1,6 @@
 import { Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';
-import { BroadcastStatus, RecipientStatus, UserStatus } from '@prisma/client';
+import { BroadcastStatus, RecipientStatus, UserStatus } from '../types/enums';
 import { config } from '../config';
 import { prisma } from '../utils/prisma';
 import { logger } from '../utils/logger';
