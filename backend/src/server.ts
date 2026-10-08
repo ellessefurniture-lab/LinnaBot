@@ -4,6 +4,14 @@ import { logger } from './utils/logger';
 import { prisma } from './utils/prisma';
 import { initTelegramBot, startBotLifecycle, botInstance } from './telegram/bot';
 
+process.on('unhandledRejection', (reason) => {
+  logger.warn('Unhandled Rejection observed:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught Exception observed:', err);
+});
+
 async function bootstrap() {
   const app = createApp();
 

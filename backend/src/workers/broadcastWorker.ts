@@ -11,31 +11,62 @@ const QUEUE_NAME = 'broadcast-queue';
 let redisClient: IORedis | null = null;
 let isRedisAvailable = false;
 
-// Attempt to connect to Redis
+let bullQueue: Queue | null = null;
+let bullWorker: Worker | null = null;
+
+// Attempt to connect to Redis safely
 try {
   redisClient = new IORedis(config.REDIS_URL, {
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
-    retryStrategy: (times) => {
-      if (times > 3) {
-        logger.warn('Redis connection failed. Switching to in-memory broadcast processor.');
-        return null; // Stop retrying
-      }
-      return Math.min(times * 1000, 3000);
-    },
+    lazyConnect: true,
+    retryStrategy: () => null, // Do not endlessly retry if Redis is not present
   });
 
-  redisClient.on('connect', () => {
-    isRedisAvailable = true;
-    logger.info('Connected to Redis for BullMQ queues');
-  });
-
-  redisClient.on('error', (err) => {
-    if (isRedisAvailable) {
-      logger.warn(`Redis connection error: ${err.message}`);
-    }
+  redisClient.on('error', () => {
     isRedisAvailable = false;
   });
+
+  redisClient
+    .connect()
+    .then(() => {
+      isRedisAvailable = true;
+      logger.info('Connected to Redis for BullMQ queues');
+
+      bullQueue = new Queue(QUEUE_NAME, {
+        connection: redisClient!,
+        defaultJobOptions: {
+          attempts: 3,
+          backoff: { type: 'exponential', delay: 5000 },
+          removeOnComplete: 100,
+          removeOnFail: 500,
+        },
+      });
+
+      bullWorker = new Worker(
+        QUEUE_NAME,
+        async (job) => {
+          logger.info(`Processing BullMQ broadcast job: ${job.id}`);
+          await processBroadcastJob(job.data);
+        },
+        {
+          connection: redisClient!,
+          concurrency: 1,
+        }
+      );
+
+      bullWorker.on('completed', (job) => {
+        logger.info(`Broadcast job ${job.id} completed successfully`);
+      });
+
+      bullWorker.on('failed', (job, err) => {
+        logger.error(`Broadcast job ${job?.id} failed:`, err);
+      });
+    })
+    .catch(() => {
+      isRedisAvailable = false;
+      logger.info('Redis not detected on localhost:6379. Operating with in-memory background worker.');
+    });
 } catch (e) {
   isRedisAvailable = false;
 }
@@ -75,49 +106,6 @@ class InMemoryQueue {
     } finally {
       this.isProcessing = false;
     }
-  }
-}
-
-// Initialize Queue
-let bullQueue: Queue | null = null;
-let bullWorker: Worker | null = null;
-
-if (redisClient) {
-  try {
-    bullQueue = new Queue(QUEUE_NAME, {
-      connection: redisClient,
-      defaultJobOptions: {
-        attempts: 3,
-        backoff: {
-          type: 'exponential',
-          delay: 5000,
-        },
-        removeOnComplete: 100,
-        removeOnFail: 500,
-      },
-    });
-
-    bullWorker = new Worker(
-      QUEUE_NAME,
-      async (job) => {
-        logger.info(`Processing BullMQ broadcast job: ${job.id}`);
-        await processBroadcastJob(job.data);
-      },
-      {
-        connection: redisClient,
-        concurrency: 1, // Controlled concurrency for rate limiting
-      }
-    );
-
-    bullWorker.on('completed', (job) => {
-      logger.info(`Broadcast job ${job.id} completed successfully`);
-    });
-
-    bullWorker.on('failed', (job, err) => {
-      logger.error(`Broadcast job ${job?.id} failed:`, err);
-    });
-  } catch (err) {
-    logger.warn('Failed to initialize BullMQ worker, using fallback.');
   }
 }
 
